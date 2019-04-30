@@ -13,17 +13,11 @@ def main():
 	generateVariables(size, islands, variables)	
 	findIntersections(islands, variables, intersections)
 	randomizeSolution(variables)	
-	brightness = determineBrightness(size, islands, variables)
-
-	'''
-	print("++++++++++++++++++++")
-	print(intersections)
-	print("++++++++++++++++++++")
-	print(islands[variables[8][0]], islands[variables[8][1]])
-	print(islands[variables[102][0]], islands[variables[102][1]])
-	'''	
+	brightness = determineBrightness(size, islands, variables, intersections)
 		
 	print(brightness)
+
+	
 	
 
 def createIslands(lines, islands):
@@ -48,8 +42,8 @@ def findIntersections(islands, variables, intersections):
 		for j in range(i+1, len(variables)):
 			if len(set(variables[i][:2]) & set(variables[j][:2])) > 0:
 				continue				
-			elif intersect(islands[variables[i][0]], islands[variables[i][1]], \
-				islands[variables[j][0]], islands[variables[j][1]]):
+			elif intersect(islands[variables[i][0]][0], islands[variables[i][1]][0], \
+				islands[variables[j][0]][0], islands[variables[j][1]][0]):
 
 				intersections.insert(len(intersections), (i, j))
 
@@ -57,7 +51,7 @@ def randomizeSolution(variables):
 	for x in variables:
 		x[2] = random.randint(0, 2)
 
-def determineBrightness(size, islands, variables):
+def determineBrightness(size, islands, variables, intersections):
 	brightness = 0	
 	for i in range(size):
 		sum = 0
@@ -66,17 +60,17 @@ def determineBrightness(size, islands, variables):
 			sum += x[2]
 		brightness += abs(islands[i][1] - sum)
 
+	for i in range(len(intersections)):
+		if variables[intersections[i][0]][2] and variables[intersections[i][1]][2]:
+			brightness += 1
+
 	return brightness
 
 def ccw(A, B, C):
-	return (C[0][1]-A[0][1]) * (B[0][0]-A[0][0]) > (B[0][1]-A[0][1]) * (C[0][0]-A[0][0])
+	return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
 
 def intersect(A, B, C, D):
 	return ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D)
-
-def nand(A, B):
-	return not(A and B)
-
 
 if __name__ == "__main__":
 	main()
