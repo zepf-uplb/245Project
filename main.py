@@ -13,12 +13,15 @@ def main():
 	generateVariables(size, islands, variables)	
 	findIntersections(islands, variables, intersections)
 	randomizeSolution(variables)	
-	brightness = determineBrightness(size, islands, variables, intersections)
-		
+	brightness = determineBrightness(size, islands, variables, intersections)		
 	print(brightness)
 
-	
-	
+	for x in variables:
+		randomWalks(random.randint(0, 2), x)
+
+	brightness = determineBrightness(size, islands, variables, intersections)		
+	print(brightness)
+
 
 def createIslands(lines, islands):
 	for i in range(1, len(lines)):
@@ -71,6 +74,25 @@ def ccw(A, B, C):
 
 def intersect(A, B, C, D):
 	return ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D)
+
+def doNothing():
+	return
+
+def doInsert(variable):
+	if variable[2] < 2:
+		variable[2] += 1
+
+def doDelete(variable):
+	if variable[2] > 0:
+		variable[2] -= 1
+
+def randomWalks(mode, variable):
+	if mode == 0:
+		doNothing()
+	elif mode == 1:
+		doInsert(variable)
+	else:
+		doDelete(variable)
 
 if __name__ == "__main__":
 	main()
