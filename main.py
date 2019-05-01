@@ -1,11 +1,14 @@
 import random
+import copy
 from firefly import Firefly
 
 random.seed(12)
-population = 2
+population = 100
+exploitChance = 7
 
 def main():
 	lines = [line.rstrip('\n') for line in open("Hashi_Puzzles/100/Hs_16_100_25_00_001.has")]
+	#lines = [line.rstrip('\n') for line in open("sample.has")]
 	size = int(lines[0].split()[0])
 	islands = []
 	variables = []
@@ -17,13 +20,23 @@ def main():
 	findIntersections(islands, variables, intersections)
 
 	for i in range(population):
-		firefly[i] = Firefly(i, variables, random.random())
+		firefly[i] = Firefly(i, copy.deepcopy(variables), random.random())
 		firefly[i].randomizeSolution()
-		print(firefly[i].determineBrightness(size, islands, intersections))
-		firefly[i].performRandomWalk()
-		print(firefly[i].determineBrightness(size, islands, intersections))
-		firefly[i].performRandomWalk()
-		print(firefly[i].determineBrightness(size, islands, intersections))
+		firefly[i].determineBrightness(size, islands, intersections)
+
+	for i in range(50):
+		firefly = sorted(firefly, key=lambda x: x.brightness)
+		print("firefly[0] = " + str(firefly[0].brightness))
+		print("firefly[1] = " + str(firefly[1].brightness))
+		print("firefly[2] = " + str(firefly[2].brightness))
+
+		for j in range(1, len(firefly)):	
+			firefly[j].performLocalWalk(firefly[0].variables, exploitChance)
+			firefly[j].performRandomWalk()	
+			firefly[j].determineBrightness(size, islands, intersections)
+			
+		#firefly[0].performRandomWalk()
+		#firefly[0].determineBrightness(size, islands, intersections)	
 
 def createIslands(lines, islands):
 	for i in range(1, len(lines)):

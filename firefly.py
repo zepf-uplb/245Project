@@ -4,7 +4,7 @@ class Firefly:
 
 	def __init__(self, id, variables, seed):
 		self.id = id
-		self.variables = variables.copy()
+		self.variables = variables
 		random.seed(seed)
 		self.brightness = 0
 
@@ -26,6 +26,11 @@ class Firefly:
 				self.brightness += 1
 
 		return self.brightness
+
+	def performLocalWalk(self, alphaVariables, exploitChance):
+		for i in range(len(self.variables)):
+			if random.randint(0, 9) < exploitChance:
+				self.variables[i][2] = alphaVariables[i][2]
 
 	def performRandomWalk(self):
 		for x in self.variables:
