@@ -1,27 +1,29 @@
 import random
+from firefly import Firefly
 
-random.seed(11)
+random.seed(12)
+population = 2
 
 def main():
 	lines = [line.rstrip('\n') for line in open("Hashi_Puzzles/100/Hs_16_100_25_00_001.has")]
 	size = int(lines[0].split()[0])
 	islands = []
 	variables = []
-	intersections = []	
+	intersections = []
+	firefly = [None]*population	
 
 	createIslands(lines, islands)
 	generateVariables(size, islands, variables)	
 	findIntersections(islands, variables, intersections)
-	randomizeSolution(variables)	
-	brightness = determineBrightness(size, islands, variables, intersections)		
-	print(brightness)
 
-	for x in variables:
-		randomWalks(random.randint(0, 2), x)
-
-	brightness = determineBrightness(size, islands, variables, intersections)		
-	print(brightness)
-
+	for i in range(population):
+		firefly[i] = Firefly(i, variables, random.random())
+		firefly[i].randomizeSolution()
+		print(firefly[i].determineBrightness(size, islands, intersections))
+		firefly[i].performRandomWalk()
+		print(firefly[i].determineBrightness(size, islands, intersections))
+		firefly[i].performRandomWalk()
+		print(firefly[i].determineBrightness(size, islands, intersections))
 
 def createIslands(lines, islands):
 	for i in range(1, len(lines)):
@@ -50,49 +52,11 @@ def findIntersections(islands, variables, intersections):
 
 				intersections.insert(len(intersections), (i, j))
 
-def randomizeSolution(variables):
-	for x in variables:
-		x[2] = random.randint(0, 2)
-
-def determineBrightness(size, islands, variables, intersections):
-	brightness = 0	
-	for i in range(size):
-		sum = 0
-		interest = [x for x in variables if x[0] == i or x[1] == i]	
-		for x in interest:
-			sum += x[2]
-		brightness += abs(islands[i][1] - sum)
-
-	for i in range(len(intersections)):
-		if variables[intersections[i][0]][2] and variables[intersections[i][1]][2]:
-			brightness += 1
-
-	return brightness
-
 def ccw(A, B, C):
 	return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
 
 def intersect(A, B, C, D):
 	return ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D)
-
-def doNothing():
-	return
-
-def doInsert(variable):
-	if variable[2] < 2:
-		variable[2] += 1
-
-def doDelete(variable):
-	if variable[2] > 0:
-		variable[2] -= 1
-
-def randomWalks(mode, variable):
-	if mode == 0:
-		doNothing()
-	elif mode == 1:
-		doInsert(variable)
-	else:
-		doDelete(variable)
 
 if __name__ == "__main__":
 	main()
