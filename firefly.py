@@ -12,9 +12,9 @@ class Firefly:
 		for x in self.variables:
 			x[2] = random.randint(0, 2)
 
-	def determineBrightness(self, size, islands, intersections):
+	def determineBrightness(self, islands, intersections):
 		self.brightness = 0
-		for i in range(size):
+		for i in range(len(islands)):
 			sum = 0
 			interest = [x for x in self.variables if x[0] == i or x[1] == i]	
 			for x in interest:
@@ -32,25 +32,22 @@ class Firefly:
 			if random.randint(0, 9) < exploitChance:
 				self.variables[i][2] = alphaVariables[i][2]
 
-	def performRandomWalk(self):
-		for x in self.variables:
-			self.randomWalks(random.randint(0, 2), x)
-
-	def doNothing(self):
-		return
+	def performRandomWalk(self, exploreChance):
+		for i in range(len(self.variables)):
+			if random.randint(0, 9) < exploreChance:
+				if random.randint(0, 1) == 0:
+					self.doInsert(self.variables[i])
+				else:
+					self.doDelete(self.variables[i])
 
 	def doInsert(self, variable):
 		if variable[2] < 2:
 			variable[2] += 1
+		else:
+			self.doDelete(variable)
 
 	def doDelete(self, variable):
 		if variable[2] > 0:
 			variable[2] -= 1
-
-	def randomWalks(self, mode, variable):
-		if mode == 0:
-			self.doNothing()
-		elif mode == 1:
-			self.doInsert(variable)
 		else:
-			self.doDelete(variable)
+			self.doInsert(variable)
